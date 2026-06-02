@@ -46,7 +46,12 @@ The main goals are:
 ## Installation
 
 ```bash
-npm install dench
+npm install dench-fetch
+```
+
+(beta version)
+```bash
+npm install dench-fetch@beta
 ```
 
 ## Basic Usage

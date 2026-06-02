@@ -40,7 +40,12 @@ Dench는 `fetch`의 기본 모델은 유지하면서, 기존의 http request fet
 ## 설치
 
 ```bash
-npm install dench
+npm install dench-fetch
+```
+
+(베타 버전)
+```bash
+npm install dench-fetch@beta
 ```
 
 ## 기본 사용법
