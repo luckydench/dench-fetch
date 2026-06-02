@@ -25,7 +25,8 @@
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run typecheck && npm run build",
     "publish-beta": "npm publish --tag beta",
-    "version-beta": "npm version prerelease --preid=beta"
+    "version-beta": "npm version prerelease --preid=beta",
+    "view-version" : "npm view dench-fetch versions"
   },
   "devDependencies": {
     "tsup": "^8.5.1",
