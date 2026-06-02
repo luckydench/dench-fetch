@@ -23,7 +23,9 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run typecheck && npm run build"
+    "prepublishOnly": "npm run typecheck && npm run build",
+    "publish-beta" : "npm publish --tag beta",
+    "version-beta" : "npm version prerelease --preid=beta"
   },
   "devDependencies": {
     "tsup": "^8.5.1",
