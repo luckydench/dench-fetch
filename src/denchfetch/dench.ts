@@ -7,7 +7,7 @@ import {
     referrerPolicyConfig,
     redirectConfig,
     errorConfig, } from "./denchConfigModule"
-import { runfetch, toFormData, toJson, toObject } from "./denchRunner";
+import { runfetch, toFormData, toJson } from "./denchRunner";
 import { boundaryNormalize, hardNormalize } from "./denchUtils";
 import type { HTTPCache, HTTPCredentials, HTTPMode, HTTPRedirect, HTTPReferrerPolicy } from "../types/denchEnum";
 import type { DenchConfig, DenchCreateBuilder, DenchGetBuilder, DenchInterface } from "../types/dench";
@@ -20,7 +20,6 @@ const createGetBuilder = <T>(config: DenchConfig): DenchGetBuilder<T> => ({
     config: config,
     toResponse: () => runfetch<T>(config),
     toJson: () => toJson(config),
-    toObject: () => toObject(config),
     toFormData: () => toFormData(config),
     error: (callback: (error: unknown) => void) => {
         errorConfig(config, callback);
@@ -60,7 +59,6 @@ const createPostBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => ({
     config: config,
     toResponse: () => runfetch<T>(config),
     toJson: () => toJson(config),
-    toObject: () => toObject(config),
     toFormData: () => toFormData(config),
     sendJson: () => createPostBuilder<T>(sendJsonConfig(config)),
     sendForm: () => createPostBuilder<T>(sendFormConfig(config)),

@@ -12,12 +12,6 @@ export const toJson = async <T>(config : DenchConfig)  => {
     })
 }
 
-export const toObject = async <T>(config: DenchConfig) => {
-    return runfetch<T>(config).then((res) => {
-        return res as unknown as T;
-    })
-}
-
 
 export const toFormData = async <T>(config: DenchConfig) => {
     return runfetch<T>(config).then((res) => {

@@ -6,7 +6,7 @@ export default async function denchfetcher<T>(url: string, config?: DenchConfig)
     let res : Response;
     let timeout : ReturnType<typeof setTimeout> | undefined;
 
-    console.log("Denchfetcher called with URL:", url, "and config:", config);
+    //console.log("Denchfetcher called with URL:", url, "and config:", config);
 
     
     if(config?.timeout && config.abortController){
