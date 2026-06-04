@@ -1,7 +1,7 @@
 {
   "name": "dench-fetch",
   "version": "0.1.0-beta.2",
-  "description": "",
+  "description": "A lightweight and efficient HTTP client library for modern JavaScript environments, built on top of the Fetch API.",
   "homepage": "https://github.com/luckydeench/dench#readme",
   "bugs": {
     "url": "https://github.com/luckydeench/dench/issues"
@@ -26,10 +26,13 @@
     "prepublishOnly": "npm run typecheck && npm run build",
     "publish-beta": "npm publish --tag beta",
     "version-beta": "npm version prerelease --preid=beta",
-    "view-version" : "npm view dench-fetch versions"
+    "view-version": "npm view dench-fetch versions",
+    "build:log": "tsx --tsconfig devtools/tsconfig.json devtools/build_log.ts"
   },
   "devDependencies": {
+    "@types/node": "^25.9.1",
     "tsup": "^8.5.1",
+    "tsx": "^4.22.4",
     "typescript": "^5.8.3"
   }
 }
