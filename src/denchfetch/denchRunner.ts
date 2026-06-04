@@ -1,4 +1,5 @@
-import type { DenchConfig } from "../types/denchRunner";
+
+import type { DenchConfig } from "../types/denchConfig";
 import denchfetcher from "./denchfetcher";
 
 export function runfetch<T>(config: DenchConfig): Promise<Response> {
