@@ -1,7 +1,3 @@
-import { dench } from './denchfetch/dench';
-import { DenchAuthType } from './types/denchEnum';
-import { HTTPCache } from './types/denchHTTPEnum';
-
 export { dench } from './denchfetch/dench';
 export { default as denchfetcher } from './denchfetch/denchfetcher';
 export { HTTPCredentials, HTTPMode, HTTPReferrerPolicy, HTTPCache, HTTPRedirect } from './types/denchHTTPEnum';
