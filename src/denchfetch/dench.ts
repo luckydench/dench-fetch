@@ -35,6 +35,7 @@ const createGetBuilder = <T>(config: DenchConfig): DenchGetBuilder<T> => ({
     referrerPolicy: (policy : HTTPReferrerPolicy) => createGetBuilder<T>(referrerPolicyConfig(config, policy)),
     mode: (mode : HTTPMode) => createGetBuilder<T>(modeConfig(config, mode)),
     redirect: (redirect : HTTPRedirect) => createGetBuilder<T>(redirectConfig(config, redirect)),
+    api : <P = T>(api : string) => createGetBuilder<P>({...config, api}),
     boundaryNormalize: () => {
         const { baseURL, apiURL } = boundaryNormalize(config.baseURL, config.api);
 
@@ -77,6 +78,7 @@ const createPostBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => ({
     cache : (cache : HTTPCache) => createPostBuilder<T>(cacheConfig(config, cache)),
     referrerPolicy: (policy : HTTPReferrerPolicy) => createPostBuilder<T>(referrerPolicyConfig(config, policy)),
     redirect: (redirect : HTTPRedirect) => createPostBuilder<T>(redirectConfig(config, redirect)),
+    api : <P=T>(api : string) => createPostBuilder<P>({...config, api}),
     boundaryNormalize: () => {
         const { baseURL, apiURL } = boundaryNormalize(config.baseURL, config.api);
         config.baseURL = baseURL;
@@ -115,7 +117,7 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
 
     if(label) DenchInstancePreset[label] = DenchInstancePreset[label] || dench(baseURL);
 
-    const get = <T>(api :string) : DenchGetBuilder<T> => {
+    const get = <T>(api:string = "") : DenchGetBuilder<T> => {
 
         const config : DenchConfig = {
             baseURL,
@@ -128,35 +130,33 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
     }
 
 
-    const post = <T>(api:string, data?: any) : DenchCreateBuilder<T>=>{
+    const post = <T>(api:string = "") : DenchCreateBuilder<T>=>{
 
         const baseConfig : DenchConfig = {
             baseURL,
             api,
             options : {
                 method : 'POST',
-                body : data
             }
         }
         return createPostBuilder<T>(baseConfig);
     }
 
 
-    const put = <T>(api: string, data?: any): DenchCreateBuilder<T> => {
+    const put = <T>(api:string = ""): DenchCreateBuilder<T> => {
 
         const baseConfig: DenchConfig = {
             baseURL,
             api,
             options: {
                 method: 'PUT',
-                body: data
             }
         }
         return createPostBuilder<T>(baseConfig);
     }
 
 
-    const del = <T>(api:string) : DenchGetBuilder<T> => {
+    const del = <T>(api:string = "") : DenchGetBuilder<T> => {
 
         const baseConfig : DenchConfig = {
             baseURL,
