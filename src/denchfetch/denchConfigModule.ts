@@ -94,7 +94,12 @@ export function credentialsConfig(config: DenchConfig, credentials: HTTPCredenti
 }
 
 
-export function sendJsonConfig(config : DenchConfig) :DenchConfig{
+export function sendJsonConfig(config : DenchConfig, data?: any) :DenchConfig{
+
+    if(data !== undefined){
+        config.options.body = data;
+    }
+
     return{
         ...config,
         options : {
@@ -108,7 +113,11 @@ export function sendJsonConfig(config : DenchConfig) :DenchConfig{
         }
 }
 
-export function sendFormConfig(config : DenchConfig) : DenchConfig {
+export function sendFormConfig(config : DenchConfig, data?: any) : DenchConfig {
+
+    if(data !== undefined){
+        config.options.body = data;
+    }
 
     if(!(config.options.body instanceof FormData)){
         throw new Error("Body must be an instance of FormData when using sendForm");
@@ -127,7 +136,11 @@ export function sendFormConfig(config : DenchConfig) : DenchConfig {
 }
 
 
-export function sendBlobConfig(config : DenchConfig) : DenchConfig {
+export function sendBlobConfig(config : DenchConfig, data?: any) : DenchConfig {
+    if(data !== undefined){
+        config.options.body = data;
+    }
+
     return{
         ...config,
         options : {

@@ -63,9 +63,9 @@ const createPostBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => ({
     toResponse: () => runfetch<T>(config),
     toJson: () => toJson(config),
     toFormData: () => toFormData(config),
-    sendJson: () => createPostBuilder<T>(sendJsonConfig(config)),
-    sendForm: () => createPostBuilder<T>(sendFormConfig(config)),
-    sendBlob: () => createPostBuilder<T>(sendBlobConfig(config)),
+    sendJson: (data?) => createPostBuilder<T>(sendJsonConfig(config, data)),
+    sendForm: (data?) => createPostBuilder<T>(sendFormConfig(config, data)),
+    sendBlob: (data?) => createPostBuilder<T>(sendBlobConfig(config, data)),
     error: (callback: (error: unknown) => void) => {
         errorConfig(config, callback);
         return createPostBuilder<T>(config);
