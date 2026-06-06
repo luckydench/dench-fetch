@@ -11,10 +11,10 @@ import type { DenchCreateBuilder, DenchGetBuilder } from "./denchBuilder"
  */
 export interface DenchInterface{
     baseURL : DenchHTTPURL,
-    get : <T>(api:string) => DenchGetBuilder<T>
-    post : <T>(api: string, data : any) => DenchCreateBuilder<T>
-    put : <T>(api: string, data : any) => DenchCreateBuilder<T>
-    delete : <T>(api: string) => DenchGetBuilder<T>
+    get : <T>(api?:string) => DenchGetBuilder<T>
+    post : <T>(api?: string) => DenchCreateBuilder<T>
+    put : <T>(api?: string) => DenchCreateBuilder<T>
+    delete : <T>(api?: string) => DenchGetBuilder<T>
 }
 
 
