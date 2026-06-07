@@ -1,3 +1,4 @@
+import type { DenchURLSearchParams } from "../types/dench"
 import type { DenchConfig } from "../types/denchConfig"
 import { DenchAuthType } from "../types/denchEnum"
 import type { HTTPCache, HTTPCredentials, HTTPMode, HTTPRedirect, HTTPReferrerPolicy } from "../types/denchHTTPEnum"
@@ -153,6 +154,50 @@ export function sendBlobConfig(config : DenchConfig, data?: any) : DenchConfig {
         }
     }
 }
+
+export function sendUrlEncodedConfig(config : DenchConfig, data?: DenchURLSearchParams) : DenchConfig {
+
+    if(data !== undefined){
+        const body = new URLSearchParams(data);
+        config.options.body = body;
+    }
+
+    return {
+        ...config,
+        options : {
+            ...config.options,
+            headers : {
+                ...config.options.headers,
+                'Content-Type' : 'application/x-www-form-urlencoded'
+                },
+            body : config.options.body
+        }
+    }
+
+}
+
+export function sendRawConfig(config : DenchConfig, data?: any) : DenchConfig {
+
+    if(data !== undefined){
+        config.options.body = data;
+    }
+    
+    return {
+        ...config,
+        options : {
+            ...config.options,
+            headers : {
+                ...config.options.headers,
+                'Content-Type' : 'application/octet-stream'
+                },
+            body : config.options.body
+        }
+    }
+
+}
+
+
+
 
 export function modeConfig(config : DenchConfig, mode : HTTPMode) : DenchConfig {
     return {

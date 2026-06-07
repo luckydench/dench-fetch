@@ -2,6 +2,30 @@ import type { DenchRunner } from "./denchRunner";
 import type { DenchBaseConfig } from "./denchConfig";
 import type { HTTPCache, HTTPCredentials, HTTPMode, HTTPRedirect, HTTPReferrerPolicy } from "./denchHTTPEnum";
 import type { DenchAuthType } from "./denchEnum";
+import type { DenchURLSearchParams } from "./dench";
+
+export interface DenchBuildUtils<T, R extends DenchBuilder<T, R>>{
+    /**
+     * 빌더를 복사합니다.
+     * 
+     * @example 다음과 같이 재활용 하는 용도로 사용할 수 있습니다.
+     * ```ts
+     * const common_builder = dench("http://example.com").get().auth("mytoken").timeout(5000);
+     * 
+     * const builder1 = common_builder.copy().api("/api/endpoint1");
+     * const builder2 = common_builder.copy().api("/api/endpoint2");
+     * const builder3 = common_builder.copy().api("/api/endpoint3");
+     * 
+     * const res1 = await builder1.toJson();
+     * await builder2.toJson();
+     * await builder3.toJson();
+     * ```
+     * 
+     * @returns 복사된 빌더 인스턴스
+     */
+    copy? : () => R
+}
+
 
 export interface DenchBuilder<T, R extends DenchBuilder<T, R>>{
     config : DenchBaseConfig,
@@ -120,6 +144,7 @@ export interface DenchBuilder<T, R extends DenchBuilder<T, R>>{
 export interface DenchCreateBuilder<T> extends DenchBuilder<T, DenchCreateBuilder<T>>, DenchRunner<T>{
     /**
      * 요청 데이터를 JSON 형식으로 전송합니다.
+     * 
      * data를 생략할 경우 dench.post 또는 dench.put 메서드에 전달된 data가 사용됩니다.
      * 이미 설정한 경우 덮어쓰기가 되니 주의하세요.
      * @header { "Content-Type" : "application/json" }
@@ -127,6 +152,7 @@ export interface DenchCreateBuilder<T> extends DenchBuilder<T, DenchCreateBuilde
     sendJson : (data? : unknown) => DenchCreateBuilder<T>,
     /**
      * 요청 데이터를 FormData 형식으로 전송합니다.
+     * 
      * data를 생략할 경우 dench.post 또는 dench.put 메서드에 전달된 data가 사용됩니다.
      * 이미 설정한 경우 덮어쓰기가 되니 주의하세요.
      * @header { "Content-Type" : "multipart/form-data" }
@@ -134,6 +160,7 @@ export interface DenchCreateBuilder<T> extends DenchBuilder<T, DenchCreateBuilde
     sendForm : (data? : FormData) => DenchCreateBuilder<T>,
     /**
      * 요청 데이터를 Blob 형식으로 전송합니다.
+     * 
      * data를 생략할 경우 dench.post 또는 dench.put 메서드에 전달된 data가 사용됩니다.
      * 이미 설정한 경우 덮어쓰기가 되니 주의하세요.
      * @header { "Content-Type" : "application/octet-stream" }
@@ -142,19 +169,22 @@ export interface DenchCreateBuilder<T> extends DenchBuilder<T, DenchCreateBuilde
 
     /**
      * 요청 데이터를 URLSearchParams 형식으로 전송합니다.
+     * 
      * data를 생략할 경우 dench.post 또는 dench.put 메서드에 전달된 data가 사용됩니다.
      * 이미 설정한 경우 덮어쓰기가 되니 주의하세요.
      * @header { "Content-Type" : "application/x-www-form-urlencoded" }
      */
-    sendUrlEncoded? : (data?  : URLSearchParams) => DenchCreateBuilder<T>
+    sendUrlEncoded : (data?  : DenchURLSearchParams) => DenchCreateBuilder<T>
 
     /**
      * 요청 데이터를 원시 BodyInit 형식으로 전송합니다.
+     * 어떠한 변환 없이 data를 그대로 body에 넣습니다.
+     * 
      * data를 생략할 경우 dench.post 또는 dench.put 메서드에 전달된 data가 사용됩니다.
      * 이미 설정한 경우 덮어쓰기가 되니 주의하세요.
      * @header { "Content-Type" : "application/octet-stream" }
      */
-    sendRaw? : (data? : BodyInit) => DenchCreateBuilder<T>
+    sendRaw : (data? : BodyInit) => DenchCreateBuilder<T>
 
 }
 

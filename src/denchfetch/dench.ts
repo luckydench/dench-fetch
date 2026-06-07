@@ -6,7 +6,9 @@ import {
     cacheConfig,
     referrerPolicyConfig,
     redirectConfig,
-    errorConfig, } from "./denchConfigModule"
+    errorConfig,
+    sendUrlEncodedConfig,
+    sendRawConfig, } from "./denchConfigModule"
 import { runfetch, toFormData, toJson } from "./denchRunner";
 import { boundaryNormalize, hardNormalize } from "./denchUtils";
 import type { HTTPCache, HTTPCredentials, HTTPMode, HTTPRedirect, HTTPReferrerPolicy } from "../types/denchHTTPEnum";
@@ -66,6 +68,8 @@ const createPostBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => ({
     sendJson: (data?) => createPostBuilder<T>(sendJsonConfig(config, data)),
     sendForm: (data?) => createPostBuilder<T>(sendFormConfig(config, data)),
     sendBlob: (data?) => createPostBuilder<T>(sendBlobConfig(config, data)),
+    sendUrlEncoded: (data?) => createPostBuilder<T>(sendUrlEncodedConfig(config, data)),
+    sendRaw : (data?) => createPostBuilder<T>(sendRawConfig(config, data)),
     error: (callback: (error: unknown) => void) => {
         errorConfig(config, callback);
         return createPostBuilder<T>(config);
