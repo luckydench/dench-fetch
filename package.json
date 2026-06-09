@@ -22,6 +22,8 @@
   ],
   "scripts": {
     "test-start": "tsx src/test.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run typecheck && npm run build",
