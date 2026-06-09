@@ -10,7 +10,6 @@ import {
     sendUrlEncodedConfig,
     sendRawConfig, } from "./denchConfigModule"
 import { runfetch, toFormData, toJson } from "./denchRunner";
-import { boundaryNormalize, hardNormalize } from "./denchUtils";
 import type { HTTPCache, HTTPCredentials, HTTPMode, HTTPRedirect, HTTPReferrerPolicy } from "../types/denchHTTPEnum";
 import type { DenchCreateBuilder, DenchGetBuilder } from "../types/denchBuilder";
 import { type DenchConfig } from "../types/denchConfig";
@@ -134,7 +133,7 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
         const config : DenchConfig = {
             baseURL,
             api,
-            URLNormalize : DenchURLNormalizeMode.NONE,
+            URLNormalize : DenchURLNormalizeMode.BOUNDARY,
             options : {
                 method : 'GET',
             }
@@ -148,7 +147,7 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
         const baseConfig : DenchConfig = {
             baseURL,
             api,
-            URLNormalize : DenchURLNormalizeMode.NONE,
+            URLNormalize : DenchURLNormalizeMode.BOUNDARY,
             options : {
                 method : 'POST',
             }
@@ -162,7 +161,7 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
         const baseConfig: DenchConfig = {
             baseURL,
             api,
-            URLNormalize : DenchURLNormalizeMode.NONE,
+            URLNormalize : DenchURLNormalizeMode.BOUNDARY,
             options: {
                 method: 'PUT',
             }
@@ -176,7 +175,7 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
         const baseConfig : DenchConfig = {
             baseURL,
             api,
-            URLNormalize : DenchURLNormalizeMode.NONE,
+            URLNormalize : DenchURLNormalizeMode.BOUNDARY,
             options : {
                 method : 'DELETE',
             }
