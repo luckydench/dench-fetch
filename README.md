@@ -10,7 +10,7 @@ Dench is a lightweight TypeScript HTTP request builder built on top of the nativ
 It is designed for small, readable request chains:
 
 ```ts
-import { dench } from "dench";
+import { dench } from "dench-fetch";
 
 type User = {
   id: number;
@@ -61,7 +61,7 @@ npm install dench-fetch@beta
 ### Create a Client
 
 ```ts
-import { dench } from "dench";
+import { dench } from "dench-fetch";
 
 const api = dench("https://api.example.com");
 ```
@@ -78,11 +78,11 @@ const posts = await api
 
 ```ts
 const created = await api
-  .post<Post>("/posts", {
+  .post<Post>("/posts")
+  .sendJson({
     title: "Hello",
     body: "Dench request",
   })
-  .sendJson()
   .toJson();
 ```
 
@@ -90,10 +90,10 @@ const created = await api
 
 ```ts
 const updated = await api
-  .put<Post>("/posts/1", {
+  .put<Post>("/posts/1")
+  .sendJson({
     title: "Updated title",
   })
-  .sendJson()
   .toJson();
 ```
 
@@ -110,7 +110,7 @@ await api
 Dench supports common `fetch` options through builder methods.
 
 ```ts
-import { HTTPCredentials, HTTPMode } from "dench";
+import { HTTPCredentials, HTTPMode } from "dench-fetch";
 
 const result = await api
   .get<Result>("/secure")
@@ -138,21 +138,46 @@ Available option methods:
 `POST` and `PUT` builders support body format helpers.
 
 ```ts
-await api.post("/json", { name: "dench" }).sendJson().toJson();
+await api.post("/json").sendJson({ name: "dench" }).toJson();
 
 const form = new FormData();
 form.append("file", file);
-await api.post("/upload", form).sendForm().toResponse();
+await api.post("/upload").sendForm(form).toResponse();
 
-await api.post("/binary", blob).sendBlob().toResponse();
+await api.post("/binary").sendBlob(blob).toResponse();
+
+await api.post("/form").sendUrlEncoded({ name: "dench" }).toResponse();
+
+await api.post("/raw").sendRaw("raw body").toResponse();
 ```
 
 Body helper behavior:
 
-- `sendJson()` stringifies the request body and sets
+- `sendJson(data)` stringifies the request body and sets
   `Content-Type: application/json`.
-- `sendForm()` requires the body to be a `FormData` instance.
-- `sendBlob()` sends the body with `Content-Type: application/octet-stream`.
+- `sendForm(data)` requires the body to be a `FormData` instance.
+- `sendBlob(data)` sends the body with `Content-Type: application/octet-stream`.
+- `sendUrlEncoded(data)` converts the body to `URLSearchParams`.
+- `sendRaw(data)` sends a native `BodyInit` value without transforming it.
+
+## Reusing Builders
+
+Use `copy()` to create an independent builder from reusable request settings.
+
+```ts
+const authenticated = api
+  .get()
+  .auth("access-token")
+  .timeout(3000);
+
+const users = authenticated.copy().api<User[]>("/users");
+const posts = authenticated.copy().api<Post[]>("/posts");
+
+const [userData, postData] = await Promise.all([
+  users.toJson(),
+  posts.toJson(),
+]);
+```
 
 ## Response Helpers
 
@@ -167,27 +192,38 @@ const formData = await api.get("/form").toFormData();
 Available response helpers:
 
 - `toResponse()` returns the native `Response`.
-- `toJson<T>()` parses the response body as JSON and returns `T`.
+- `toJson()` parses the response body as JSON and returns the type selected by
+  `get<T>()`, `post<T>()`, `put<T>()`, or `api<T>()`.
 - `toFormData()` parses the response body as `FormData`.
 
 ## URL Normalization
 
-Dench normally joins `baseURL` and `api` directly. If the URL may contain
-inconsistent slashes, use a normalization helper before executing the request.
+Dench uses boundary normalization by default. It removes trailing slashes from
+`baseURL` and ensures that the API path starts with exactly one slash.
 
 ```ts
 const data = await dench("https://api.example.com/")
   .get<Data>("//users//1")
-  .boundaryNormalize()
   .toJson();
 ```
 
 Normalization helpers:
 
 - `boundaryNormalize()` removes trailing slashes from `baseURL` and ensures the
-  API path starts with one slash.
+  API path starts with one slash. This is the default mode.
 - `hardNormalize()` also collapses duplicated slashes inside the URL parts while
   preserving the protocol separator.
+- `URLNormalize(DenchURLNormalizeMode.NONE)` preserves the URL parts and joins
+  them without normalization.
+
+```ts
+import { DenchURLNormalizeMode } from "dench-fetch";
+
+const response = await dench("https://api.example.com/")
+  .get("//raw-path")
+  .URLNormalize(DenchURLNormalizeMode.NONE)
+  .toResponse();
+```
 
 ## Types And Enums
 
@@ -201,7 +237,9 @@ import {
   HTTPMode,
   HTTPRedirect,
   HTTPReferrerPolicy,
-} from "dench";
+  DenchAuthType,
+  DenchURLNormalizeMode,
+} from "dench-fetch";
 
 import type {
   DenchConfig,
@@ -209,7 +247,7 @@ import type {
   DenchGetBuilder,
   DenchInterface,
   DenchRunner,
-} from "dench";
+} from "dench-fetch";
 ```
 
 ## Development

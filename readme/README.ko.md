@@ -10,7 +10,7 @@ Dench는 네이티브 `fetch` API를 기반으로 만든 가벼운 TypeScript HT
 반복되는 요청 설정을 짧고 읽기 쉬운 체이닝 코드로 작성할 수 있게 해줍니다.
 
 ```ts
-import { dench } from "dench";
+import { dench } from "dench-fetch";
 
 type User = {
   id: number;
@@ -58,7 +58,7 @@ npm install dench-fetch@beta
 ### 클라이언트 생성
 
 ```ts
-import { dench } from "dench";
+import { dench } from "dench-fetch";
 
 const api = dench("https://api.example.com");
 ```
@@ -75,11 +75,11 @@ const posts = await api
 
 ```ts
 const created = await api
-  .post<Post>("/posts", {
+  .post<Post>("/posts")
+  .sendJson({
     title: "Hello",
     body: "Dench request",
   })
-  .sendJson()
   .toJson();
 ```
 
@@ -87,10 +87,10 @@ const created = await api
 
 ```ts
 const updated = await api
-  .put<Post>("/posts/1", {
+  .put<Post>("/posts/1")
+  .sendJson({
     title: "Updated title",
   })
-  .sendJson()
   .toJson();
 ```
 
@@ -107,7 +107,7 @@ await api
 Dench는 자주 사용하는 `fetch` 옵션을 빌더 메서드로 제공합니다.
 
 ```ts
-import { HTTPCredentials, HTTPMode } from "dench";
+import { HTTPCredentials, HTTPMode } from "dench-fetch";
 
 const result = await api
   .get<Result>("/secure")
@@ -135,20 +135,45 @@ const result = await api
 `POST`와 `PUT` 빌더는 요청 body 형식을 지정하는 helper를 제공합니다.
 
 ```ts
-await api.post("/json", { name: "dench" }).sendJson().toJson();
+await api.post("/json").sendJson({ name: "dench" }).toJson();
 
 const form = new FormData();
 form.append("file", file);
-await api.post("/upload", form).sendForm().toResponse();
+await api.post("/upload").sendForm(form).toResponse();
 
-await api.post("/binary", blob).sendBlob().toResponse();
+await api.post("/binary").sendBlob(blob).toResponse();
+
+await api.post("/form").sendUrlEncoded({ name: "dench" }).toResponse();
+
+await api.post("/raw").sendRaw("raw body").toResponse();
 ```
 
 각 helper의 동작은 다음과 같습니다.
 
-- `sendJson()`은 요청 body를 JSON 문자열로 변환하고 `Content-Type: application/json`을 설정합니다.
-- `sendForm()`은 body가 `FormData` 인스턴스일 때 사용합니다.
-- `sendBlob()`은 `Content-Type: application/octet-stream`으로 body를 전송합니다.
+- `sendJson(data)`는 요청 body를 JSON 문자열로 변환하고 `Content-Type: application/json`을 설정합니다.
+- `sendForm(data)`는 body가 `FormData` 인스턴스일 때 사용합니다.
+- `sendBlob(data)`는 `Content-Type: application/octet-stream`으로 body를 전송합니다.
+- `sendUrlEncoded(data)`는 body를 `URLSearchParams`로 변환하여 전송합니다.
+- `sendRaw(data)`는 네이티브 `BodyInit` 값을 변환 없이 전송합니다.
+
+## 빌더 재사용
+
+`copy()`를 사용하면 공통 요청 설정을 가진 독립적인 빌더를 만들 수 있습니다.
+
+```ts
+const authenticated = api
+  .get()
+  .auth("access-token")
+  .timeout(3000);
+
+const users = authenticated.copy().api<User[]>("/users");
+const posts = authenticated.copy().api<Post[]>("/posts");
+
+const [userData, postData] = await Promise.all([
+  users.toJson(),
+  posts.toJson(),
+]);
+```
 
 ## 응답 Helper
 
@@ -163,24 +188,33 @@ const formData = await api.get("/form").toFormData();
 사용 가능한 응답 helper는 다음과 같습니다.
 
 - `toResponse()`는 네이티브 `Response`를 반환합니다.
-- `toJson<T>()`는 응답 body를 JSON으로 파싱하고 `T` 타입으로 반환합니다.
+- `toJson()`는 응답 body를 JSON으로 파싱하고 `get<T>()`, `post<T>()`, `put<T>()`, `api<T>()`에서 지정한 타입으로 반환합니다.
 - `toFormData()`는 응답 body를 `FormData`로 파싱합니다.
 
 ## URL 정규화
 
-Dench는 기본적으로 `baseURL`과 `api`를 그대로 이어 붙입니다. URL의 슬래시가 일정하지 않을 수 있다면 요청 실행 전에 정규화 helper를 사용할 수 있습니다.
+Dench는 기본적으로 경계 정규화를 적용합니다. `baseURL` 끝의 슬래시를 제거하고 API path가 정확히 하나의 슬래시로 시작하도록 만듭니다.
 
 ```ts
 const data = await dench("https://api.example.com/")
   .get<Data>("//users//1")
-  .boundaryNormalize()
   .toJson();
 ```
 
 정규화 helper는 다음과 같습니다.
 
-- `boundaryNormalize()`는 `baseURL` 끝의 슬래시를 제거하고 API path가 하나의 슬래시로 시작하도록 만듭니다.
+- `boundaryNormalize()`는 `baseURL` 끝의 슬래시를 제거하고 API path가 하나의 슬래시로 시작하도록 만듭니다. 기본 정규화 모드입니다.
 - `hardNormalize()`는 프로토콜 구분자(`https://`)를 보존하면서 URL 내부의 중복 슬래시도 정리합니다.
+- `URLNormalize(DenchURLNormalizeMode.NONE)`은 URL 조각을 정규화하지 않고 그대로 이어 붙입니다.
+
+```ts
+import { DenchURLNormalizeMode } from "dench-fetch";
+
+const response = await dench("https://api.example.com/")
+  .get("//raw-path")
+  .URLNormalize(DenchURLNormalizeMode.NONE)
+  .toResponse();
+```
 
 ## 타입과 Enum
 
@@ -194,7 +228,9 @@ import {
   HTTPMode,
   HTTPRedirect,
   HTTPReferrerPolicy,
-} from "dench";
+  DenchAuthType,
+  DenchURLNormalizeMode,
+} from "dench-fetch";
 
 import type {
   DenchConfig,
@@ -202,7 +238,7 @@ import type {
   DenchGetBuilder,
   DenchInterface,
   DenchRunner,
-} from "dench";
+} from "dench-fetch";
 ```
 
 ## 개발
