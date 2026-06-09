@@ -1,6 +1,6 @@
 {
   "name": "dench-fetch",
-  "version": "0.1.0-beta.5",
+  "version": "0.1.0-beta.6",
   "description": "A lightweight and efficient HTTP client library for modern JavaScript environments, built on top of the Fetch API.",
   "homepage": "https://github.com/luckydeench/dench#readme",
   "bugs": {
