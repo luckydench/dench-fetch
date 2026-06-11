@@ -87,6 +87,9 @@ export interface DenchBuilder<T, R extends DenchBuilder<T, R>> extends DenchBuil
      */
     error: (callback: (error: unknown) => void) => R,
 
+
+    params : (params : DenchURLSearchParams) => R,
+
     /**
      * URL의 슬래쉬 경계 부분을 정규화 합니다.
      * 
