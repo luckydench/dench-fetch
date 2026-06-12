@@ -21,9 +21,9 @@
     "README.md"
   ],
   "scripts": {
-    "test:start": "tsx src/test.ts",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:no-vitest": "tsx src/test.ts",
     "test:log": "tsx --tsconfig devtools/tsconfig.json devtools/test_log.ts",
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "build:log": "tsx --tsconfig devtools/tsconfig.json devtools/build_log.ts",
