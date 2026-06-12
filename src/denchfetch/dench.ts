@@ -8,13 +8,14 @@ import {
     redirectConfig,
     errorConfig,
     sendUrlEncodedConfig,
-    sendRawConfig, } from "./denchConfigModule"
+    sendRawConfig,
+    paramsConfig, } from "./denchConfigModule"
 import { runfetch, toFormData, toJson } from "./denchRunner";
 import type { HTTPCache, HTTPCredentials, HTTPMode, HTTPRedirect, HTTPReferrerPolicy } from "../types/denchHTTPEnum";
 import type { DenchCreateBuilder, DenchGetBuilder } from "../types/denchBuilder";
 import { type DenchConfig } from "../types/denchConfig";
 import { DenchURLNormalizeMode, type DenchAuthType } from "../types/denchEnum";
-import type { DenchInterface, DenchHTTPURL } from "../types/dench";
+import type { DenchInterface, DenchHTTPURL, DenchURLSearchParams } from "../types/dench";
 
 
 
@@ -37,6 +38,7 @@ const createGetBuilder = <T>(config: DenchConfig): DenchGetBuilder<T> => ({
     mode: (mode : HTTPMode) => createGetBuilder<T>(modeConfig(config, mode)),
     redirect: (redirect : HTTPRedirect) => createGetBuilder<T>(redirectConfig(config, redirect)),
     api : <P = T>(api : string) => createGetBuilder<P>({...config, api}),
+    params : (params : DenchURLSearchParams) => createGetBuilder<T>(paramsConfig(config, params)),
     boundaryNormalize: () => {
         const newConfig = {
             ...config,
@@ -96,6 +98,7 @@ const createPostBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => ({
     referrerPolicy: (policy : HTTPReferrerPolicy) => createPostBuilder<T>(referrerPolicyConfig(config, policy)),
     redirect: (redirect : HTTPRedirect) => createPostBuilder<T>(redirectConfig(config, redirect)),
     api : <P=T>(api : string) => createPostBuilder<P>({...config, api}),
+    params : (params : DenchURLSearchParams) => createPostBuilder<T>(paramsConfig(config, params)),
     boundaryNormalize: () => {
         config.URLNormalize = DenchURLNormalizeMode.BOUNDARY;
         return createPostBuilder<T>(config);

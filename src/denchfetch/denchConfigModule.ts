@@ -240,9 +240,30 @@ export const redirectConfig = (config : DenchConfig, redirect : HTTPRedirect) : 
     }
 }
 
+export const paramsConfig = (config: DenchConfig, params: DenchURLSearchParams): DenchConfig => {
+
+    if(!config.api){
+        throw new Error("API endpoint must be defined in the config to use paramsConfig");
+    }
+
+    if(params instanceof URLSearchParams){
+
+    }
+    else if(typeof params === "string"){
+
+    }
+    else if(typeof params === "object"){
+
+    }
+
+
+    return{
+        ...config,
+    }
+}
+
 
 export const errorConfig = (config: DenchConfig, callback : (error : unknown) => void) => {
     config.errorcallback = callback;
 }
-
 
