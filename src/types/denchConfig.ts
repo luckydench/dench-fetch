@@ -16,6 +16,7 @@ interface DenchOptions extends RequestInit{
 
 
 export interface DenchBaseConfig{
+    label? : string,
     baseURL : string,
     api : string,
     errorcallback? : (error : unknown) => void,

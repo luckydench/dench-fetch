@@ -20,7 +20,7 @@ import type { DenchInterface, DenchHTTPURL, DenchURLSearchParams } from "../type
 
 
 
-const createGetBuilder = <T>(config: DenchConfig): DenchGetBuilder<T> => ({
+const createGetBuilder = <T>(config: DenchConfig, label? : string): DenchGetBuilder<T> => ({
     config: config,
     toResponse: () => runfetch<T>(config),
     toJson: () => toJson(config),
@@ -70,6 +70,11 @@ const createGetBuilder = <T>(config: DenchConfig): DenchGetBuilder<T> => ({
             }
         }
         return createGetBuilder<T>(copiedConfig)
+    },
+
+    debug : ()=>{
+        console.log(`[${config.options.method}] ${config.label ? config.label : ""} Current Config:`, config);
+        return createGetBuilder<T>(config);
     }
 
 })
@@ -122,8 +127,15 @@ const createPostBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => ({
             }
         }
         return createPostBuilder<T>(copiedConfig)
-    }
+    },
 
+    debug : ()=>{
+        
+        console.log(`[${config.options.method}] ${config.label ? config.label : ""} Current Config:`, config);
+        
+        //자기 자신 반환
+        return createPostBuilder<T>(config);
+    }
 })
 
 
@@ -153,6 +165,7 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
     const get = <T>(api:string = "") : DenchGetBuilder<T> => {
 
         const config : DenchConfig = {
+            label : label,
             baseURL,
             api,
             URLNormalize : DenchURLNormalizeMode.BOUNDARY,
@@ -167,6 +180,7 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
     const post = <T>(api:string = "") : DenchCreateBuilder<T>=>{
 
         const baseConfig : DenchConfig = {
+            label : label,
             baseURL,
             api,
             URLNormalize : DenchURLNormalizeMode.BOUNDARY,
@@ -181,6 +195,7 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
     const put = <T>(api:string = ""): DenchCreateBuilder<T> => {
 
         const baseConfig: DenchConfig = {
+            label : label,
             baseURL,
             api,
             URLNormalize : DenchURLNormalizeMode.BOUNDARY,
@@ -195,6 +210,7 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
     const del = <T>(api:string = "") : DenchGetBuilder<T> => {
 
         const baseConfig : DenchConfig = {
+            label : label,
             baseURL,
             api,
             URLNormalize : DenchURLNormalizeMode.BOUNDARY,

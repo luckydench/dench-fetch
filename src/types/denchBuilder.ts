@@ -24,7 +24,22 @@ export interface DenchBuildUtils<T, R extends DenchBuilder<T, R>>{
      * @returns 복사된 빌더 인스턴스
      */
     copy : () => R
+
+    /**
+     * 현재 설정된 구성을 콘솔에 출력합니다. 디버깅 용도로 사용하세요.
+     * 
+     * 출력 형식은 아래와 같습니다.
+     * [HTTP_METHOD] [LABEL] Current Config: { ...config }
+     * 
+     * @example
+     * ```ts
+     * dench("http://example.com", "MyRequest").get("/api").auth("token").debug();
+     * // 콘솔 출력: [GET] MyRequest Current Config: { ...config }
+     * ```
+     */
+    debug: () => R
 }
+
 
 
 export interface DenchBuilder<T, R extends DenchBuilder<T, R>> extends DenchBuildUtils<T, R> {
