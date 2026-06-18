@@ -1,0 +1,1 @@
+grep -E "^(feat|fix|docs|config|hotfix|dependency):" "$1"
