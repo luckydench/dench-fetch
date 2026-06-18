@@ -30,7 +30,7 @@ jobs :
               run: |
                     echo "Current branch: $BRANCH_NAME"
 
-                    if gh pr view "$BRANCH_NAME" --base main > /dev/null 2>&1; then
+                    if gh pr view "$BRANCH_NAME" --base master > /dev/null 2>&1; then
                         echo "PR already exists"
                         exit 0
                     fi
@@ -38,13 +38,16 @@ jobs :
                     gh pr create \
                         --title "Auto PR: $BRANCH_NAME" \
                         --body "This PR was automatically created from branch $BRANCH_NAME." \
-                        --base main \
+                        --base master \
                         --head "$BRANCH_NAME"
                 
                 #위 스크립트의 주 내용을 정리하면 이렇다.
                 # echo "Current branch: $BRANCH_NAME" : 현재 브랜치 이름을 출력
-                # if gh pr view "$BRANCH_NAME" --base main > /dev/null 2>&1; then : 
-                # - 현재 브랜치에서 main 브랜치를 기준으로 PR이 존재하는지 확인
+                # if gh pr view "$BRANCH_NAME" --base master > /dev/null 2>&1; then : 
+                # - 현재 브랜치에서 master 브랜치를 기준으로 PR이 존재하는지 확인
                 # fi : PR이 존재하면 종료
                 # gh pr create : PR 생성 명령어
-                # 그 아래로는 PR 제목, 내용, 기준 브랜치(main), 현재 브랜치(head)를 지정
+                # 그 아래로는 PR 제목, 내용, 기준 브랜치(master), 현재 브랜치(head)를 지정
+
+                # 참고로 이러한 github actions의 pr 생성 기능은 실제 그 레포 setting 에서 설정이 되어있어야 한다.
+                # settings -> actions -> general -> workflow permissions -> read and write permissions 설정 ㄱ
