@@ -25,6 +25,7 @@
     "test:watch": "vitest",
     "test:no-vitest": "tsx src/test.ts",
     "test:log": "tsx --tsconfig devtools/tsconfig.json devtools/test_log.ts",
+    "codex:docs": "tsx --tsconfig devtools/tsconfig.json devtools/codex_docs_pipeline.ts",
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "build:log": "tsx --tsconfig devtools/tsconfig.json devtools/build_log.ts",
     "typecheck": "tsc --noEmit",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
+    "dotenv": "^17.4.2",
     "tsup": "^8.5.1",
     "tsx": "^4.22.4",
     "typescript": "^5.8.3",
