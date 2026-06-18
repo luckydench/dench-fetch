@@ -1,1 +1,1 @@
-grep -E "^(feat|fix|docs|config|hotfix|dependency):" "$1"
+grep -E "^(feat|fix|docs|test|config|hotfix|dependency):" "$1"
