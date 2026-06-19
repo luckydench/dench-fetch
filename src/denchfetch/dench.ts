@@ -221,11 +221,26 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
         return createGetBuilder<T>(baseConfig);
     }
 
+    const patch = <T>(api:string ="") : DenchCreateBuilder<T> => {
+
+        const baseConfig : DenchConfig = {
+            label : label,
+            baseURL,
+            api,
+            URLNormalize : DenchURLNormalizeMode.BOUNDARY,
+            options : {
+                method : 'PATCH',
+            }
+        }
+        return createPostBuilder<T>(baseConfig);
+    }
+
     return {
         baseURL,
         get : get,
         post : post,
+        patch: patch,
         put : put,
-        delete : del
+        delete : del,
     }
 }
