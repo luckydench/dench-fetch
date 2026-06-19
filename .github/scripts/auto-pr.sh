@@ -36,7 +36,8 @@ if gh pr list --head "$BRANCH_NAME" --base master > /dev/null 2>&1; then
         --title "Auto PR: $BRANCH_NAME" \
         --body-file "$BODY_FILE" \
         --add-assignee @me \
-        --add-reviewer @copilot
+        #--add-reviewer @copilot
+        # copilot을 쓰려면 일반 oauth 가 아니라 fine-grained token을 발급 받아야 함.
 
     exit 0
 fi
