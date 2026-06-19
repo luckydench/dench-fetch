@@ -35,9 +35,6 @@ if gh pr list --head "$BRANCH_NAME" --base master > /dev/null 2>&1; then
     gh pr edit "$BRANCH_NAME" \
         --title "Auto PR: $BRANCH_NAME" \
         --body-file "$BODY_FILE" \
-        --add-assignee @me \
-        #--add-reviewer @copilot
-        # copilot을 쓰려면 일반 oauth 가 아니라 fine-grained token을 발급 받아야 함.
 
     exit 0
 fi
@@ -67,8 +64,6 @@ gh pr create \
     --body-file "$BODY_FILE" \
     --base master \
     --head "$BRANCH_NAME" \
-    --assignee @me \
-    --reviewer @copilot 
 
 #위 스크립트의 주 내용을 정리하면 이렇다.
 # echo "Current branch: $BRANCH_NAME" : 현재 브랜치 이름을 출력
