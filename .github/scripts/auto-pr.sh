@@ -30,9 +30,16 @@ fi
 # pr view는 pr 존재 여부 확인힘
 # 사용 방식은 pr view <branch_name> --base <base_branch>
 # branch_name -> base_branch로 PR이 존재하면 0, 존재하지 않으면 1 반환
-if gh pr view "$BRANCH_NAME" --base master > /dev/null 2>&1; then
+if gh pr view --head "$BRANCH_NAME" --base master > /dev/null 2>&1; then
     echo "PR already exists and updating..."
+    gh pr edit "$BRANCH_NAME" \
+        --title "Auto PR: $BRANCH_NAME" \
+        --body-file "$BODY_FILE" \
+        --add-assignee @me \
+        --add-reviewer @copilot
 
+    exit 0
+fi
 # 추가로 /dev/null은 표준 출력을 버리는 장치 파일로, 그렇게 약속된 모양이니 외워야 함
 # 또한 2>&1은 표준 오류 출력(stderr, 2)를 표준 출력(stdout, 1)으로 리다이렉션 시키는 것
 # 따라서 위 구문은 모든 출력(성공, 실패)을 출력하지 않고 버리는 역할을 해줌
@@ -53,16 +60,6 @@ if gh pr view "$BRANCH_NAME" --base master > /dev/null 2>&1; then
 # 애당초 >&의 쓰이는 방법은 >& 뒤에 파일디스크립터가 오게 되어있음
 # 따라서 2>&1은 stderr을 stdout으로 리다이렉션 시키는 구문임
 
-
-
-gh pr edit "$BRANCH_NAME" \
-    --title "Auto PR: $BRANCH_NAME" \
-    --body-file "$BODY_FILE" \
-    --add-assignee @me \
-    --add-reviewer @copilot
-
-exit 0
-fi
 
 gh pr create \
     --title "Auto PR: $BRANCH_NAME" \
