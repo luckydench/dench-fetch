@@ -10,11 +10,21 @@ echo "Current branch: $BRANCH_NAME"
 
 
 SAFE_BRANCH_NAME="${BRANCH_NAME//\//-}" # 슬래시를 하이픈으로 바꿔줌
-BODY_FILE=$(find .github/pr-bodies -name ${SAFE_BRANCH_NAME}*.md | head -n 1) 
+BODY_FILE=$(find .github/pr-bodies -name "${SAFE_BRANCH_NAME}*.md" | head -n 1) 
 # find는 명령어를 찾는 파일인데
 # 여기서는 .github/pr-bodies 디렉토리에서 ${SAFE_BRANCH_NAME}*.md 패턴에 맞는 파일을 찾음
 # head -n 1은 그 중 첫 번째 파일만 가져오라는 의미임
 
+if [ -z "$BODY_FILE" ] ; then
+    BODY_FILE=".github/PULL_REQUEST_TEMPLATE.md"
+fi
+# -z 옵션은 문자열이 비어있는지 확인하는 조건문임
+
+if [ ! -f "$BODY_FILE" ] ; then
+    echo "Error: PR body file not found."
+    exit 1
+fi
+# -f 옵션은 파일이 존재하는지 확인하는 조건문임, 템플릿 파일도 없으면 오류내고 종료
 
 # 현재 브랜치 -> master 브랜치 대상으로 한 PR이 없는지 확인함.
 # pr view는 pr 존재 여부 확인힘
@@ -59,8 +69,8 @@ gh pr create \
     --body-file "$BODY_FILE" \
     --base master \
     --head "$BRANCH_NAME" \
-    --assignees @me \
-    --reviewers @copilot 
+    --assignee @me \
+    --reviewer @copilot 
 
 #위 스크립트의 주 내용을 정리하면 이렇다.
 # echo "Current branch: $BRANCH_NAME" : 현재 브랜치 이름을 출력
