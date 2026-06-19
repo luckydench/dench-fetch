@@ -14,6 +14,7 @@ export interface DenchInterface{
     get : <T>(api?:string) => DenchGetBuilder<T>
     post : <T>(api?: string, data? : unknown) => DenchCreateBuilder<T>
     put : <T>(api?: string, data? : unknown) => DenchCreateBuilder<T>
+    patch : <T>(api?: string, data? : unknown) => DenchCreateBuilder<T>
     delete : <T>(api?: string) => DenchGetBuilder<T>
 }
 

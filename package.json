@@ -33,7 +33,6 @@
     "publish:beta": "npm publish --tag beta",
     "version:beta": "npm version prerelease --preid=beta",
     "version:view": "npm view dench-fetch versions",
-    "postinstall":  "echo npm install 이후 실행됨",
     "prepare": "husky"
   },
   "devDependencies": {
