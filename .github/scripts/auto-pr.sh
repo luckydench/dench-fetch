@@ -10,9 +10,9 @@ echo "Current branch: $BRANCH_NAME"
 
 
 SAFE_BRANCH_NAME="${BRANCH_NAME//\//-}" # 슬래시를 하이픈으로 바꿔줌
-BODY_FILE=$(find .github/pr-body -name ${SAFE_BRANCH_NAME}*.md | head -n 1) 
+BODY_FILE=$(find .github/pr-bodies -name ${SAFE_BRANCH_NAME}*.md | head -n 1) 
 # find는 명령어를 찾는 파일인데
-# 여기서는 .github/pr-body 디렉토리에서 ${SAFE_BRANCH_NAME}*.md 패턴에 맞는 파일을 찾음
+# 여기서는 .github/pr-bodies 디렉토리에서 ${SAFE_BRANCH_NAME}*.md 패턴에 맞는 파일을 찾음
 # head -n 1은 그 중 첫 번째 파일만 가져오라는 의미임
 
 

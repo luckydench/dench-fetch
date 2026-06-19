@@ -1,3 +1,4 @@
 npm run typecheck
 npm run test:log
 npm run build:log
+codex exec "서브에이전트 docs_pr 호출 : pr 문서 작성해주세요"
