@@ -30,7 +30,7 @@ fi
 # pr view는 pr 존재 여부 확인힘
 # 사용 방식은 pr view <branch_name> --base <base_branch>
 # branch_name -> base_branch로 PR이 존재하면 0, 존재하지 않으면 1 반환
-if gh pr view --head "$BRANCH_NAME" --base master > /dev/null 2>&1; then
+if gh pr list --head "$BRANCH_NAME" --base master > /dev/null 2>&1; then
     echo "PR already exists and updating..."
     gh pr edit "$BRANCH_NAME" \
         --title "Auto PR: $BRANCH_NAME" \
