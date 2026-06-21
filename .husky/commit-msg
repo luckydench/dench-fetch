@@ -1,4 +1,4 @@
-if grep -E "^(feat|fix|docs|test|config|hotfix|dependency|settings|refactor)" "$1"; then
+if grep -E "^(feat|fix|docs|test|config|hotfix|dependency|settings|refactor|chore)" "$1"; then
         echo "Commit message format is correct."
     else
         echo "Error: Commit message format is incorrect."
