@@ -36,12 +36,12 @@ if [ -n "$PR_NUMBER" ]; then
   echo "PR already exists and updating..."
   gh pr edit "$PR_NUMBER" \
     --title "Auto PR: $BRANCH_NAME" \
-    --body "This PR was automatically updated from branch $BRANCH_NAME."
+    --body-file "$BODY_FILE"
 else
   echo "Creating new PR..."
   gh pr create \
     --title "Auto PR: $BRANCH_NAME" \
-    --body "This PR was automatically created from branch $BRANCH_NAME." \
+    --body-file "$BODY_FILE" \
     --base master \
     --head "$BRANCH_NAME"
 fi
