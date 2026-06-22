@@ -28,7 +28,7 @@ export function runfetch<T>(config: DenchConfig): Promise<Response> {
     }
 
 
-    return denchfetcher<T>(`${config.baseURL}${config.api}`, config);
+    return denchfetcher<T>(`${config.baseURL}${config.api}${config.params ? config.params : ""}`, config);
 }
 
 
