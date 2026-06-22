@@ -28,7 +28,7 @@ fi
 
 PR_NUMBER=$(gh pr list \
   --head "$BRANCH_NAME" \
-  --base main \
+  --base master \
   --json number \
   --jq '.[0].number')
 
