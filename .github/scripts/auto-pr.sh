@@ -42,7 +42,7 @@ else
   gh pr create \
     --title "Auto PR: $BRANCH_NAME" \
     --body "This PR was automatically created from branch $BRANCH_NAME." \
-    --base main \
+    --base master \
     --head "$BRANCH_NAME"
 fi
 
