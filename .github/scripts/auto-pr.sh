@@ -26,18 +26,40 @@ if [ ! -f "$BODY_FILE" ] ; then
 fi
 # -f 옵션은 파일이 존재하는지 확인하는 조건문임, 템플릿 파일도 없으면 오류내고 종료
 
+
+PR_NUMBER=$(gh pr list \
+  --head "$BRANCH_NAME" \
+  --base main \
+  --json number \
+  --jq '.[0].number')
+
+
+if [ -n "$PR_NUMBER" ]; then
+  echo "PR already exists and updating..."
+  gh pr edit "$PR_NUMBER" \
+    --title "Auto PR: $BRANCH_NAME" \
+    --body "This PR was automatically updated from branch $BRANCH_NAME."
+else
+    echo "Creating new PR..."
+    gh pr create \
+        --title "Auto PR: $BRANCH_NAME" \
+        --body-file "$BODY_FILE" \
+        --base main \
+        --head "$BRANCH_NAME" \
+        fi
+
 # 현재 브랜치 -> master 브랜치 대상으로 한 PR이 없는지 확인함.
 # pr view는 pr 존재 여부 확인힘
 # 사용 방식은 pr view <branch_name> --base <base_branch>
 # branch_name -> base_branch로 PR이 존재하면 0, 존재하지 않으면 1 반환
-if gh pr list --head "$BRANCH_NAME" --base master > /dev/null 2>&1; then
-    echo "PR already exists and updating..."
-    gh pr edit "$BRANCH_NAME" \
-        --title "Auto PR: $BRANCH_NAME" \
-        --body-file "$BODY_FILE" \
+# if gh pr list --head "$BRANCH_NAME" --base master > /dev/null 2>&1; then
+#     echo "PR already exists and updating..."
+#     gh pr edit "$BRANCH_NAME" \
+#         --title "Auto PR: $BRANCH_NAME" \
+#         --body-file "$BODY_FILE" \
 
-    exit 0
-fi
+#     exit 0
+# fi
 # 추가로 /dev/null은 표준 출력을 버리는 장치 파일로, 그렇게 약속된 모양이니 외워야 함
 # 또한 2>&1은 표준 오류 출력(stderr, 2)를 표준 출력(stdout, 1)으로 리다이렉션 시키는 것
 # 따라서 위 구문은 모든 출력(성공, 실패)을 출력하지 않고 버리는 역할을 해줌
@@ -58,12 +80,11 @@ fi
 # 애당초 >&의 쓰이는 방법은 >& 뒤에 파일디스크립터가 오게 되어있음
 # 따라서 2>&1은 stderr을 stdout으로 리다이렉션 시키는 구문임
 
-
-gh pr create \
-    --title "Auto PR: $BRANCH_NAME" \
-    --body-file "$BODY_FILE" \
-    --base master \
-    --head "$BRANCH_NAME" \
+# gh pr create \
+#     --title "Auto PR: $BRANCH_NAME" \
+#     --body-file "$BODY_FILE" \
+#     --base master \
+#     --head "$BRANCH_NAME" \
 
 #위 스크립트의 주 내용을 정리하면 이렇다.
 # echo "Current branch: $BRANCH_NAME" : 현재 브랜치 이름을 출력
