@@ -26,13 +26,11 @@ if [ ! -f "$BODY_FILE" ] ; then
 fi
 # -f 옵션은 파일이 존재하는지 확인하는 조건문임, 템플릿 파일도 없으면 오류내고 종료
 
-
 PR_NUMBER=$(gh pr list \
   --head "$BRANCH_NAME" \
   --base main \
   --json number \
   --jq '.[0].number')
-
 
 if [ -n "$PR_NUMBER" ]; then
   echo "PR already exists and updating..."
@@ -40,13 +38,13 @@ if [ -n "$PR_NUMBER" ]; then
     --title "Auto PR: $BRANCH_NAME" \
     --body "This PR was automatically updated from branch $BRANCH_NAME."
 else
-    echo "Creating new PR..."
-    gh pr create \
-        --title "Auto PR: $BRANCH_NAME" \
-        --body-file "$BODY_FILE" \
-        --base main \
-        --head "$BRANCH_NAME" \
-        fi
+  echo "Creating new PR..."
+  gh pr create \
+    --title "Auto PR: $BRANCH_NAME" \
+    --body "This PR was automatically created from branch $BRANCH_NAME." \
+    --base main \
+    --head "$BRANCH_NAME"
+fi
 
 # 현재 브랜치 -> master 브랜치 대상으로 한 PR이 없는지 확인함.
 # pr view는 pr 존재 여부 확인힘
