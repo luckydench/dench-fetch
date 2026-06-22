@@ -45,3 +45,15 @@ export const toFormData = async <T>(config: DenchConfig) => {
     }
 )
 }
+
+export const toHeadResponse = async <T>(config: DenchConfig) => {
+    return runfetch<T>(config).then((res)=>{
+        return res.headers;
+    })
+}
+
+export const toStatus = async <T>(config: DenchConfig) => {
+    return runfetch<T>(config).then((res)=>{
+        return res.status;
+    })
+}
