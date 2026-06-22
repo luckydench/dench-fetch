@@ -15,6 +15,8 @@
     <a href="./readme/README.ko.md">한국어</a>
     ·
     <a href="./readme/update">Update Notes</a>
+    .
+    <a href="./readme/architecture/dench-fetch-architecture.md">Architecture</a>
   </p>
 
   <p>
