@@ -10,133 +10,123 @@ import {
     sendUrlEncodedConfig,
     sendRawConfig,
     paramsConfig, } from "./denchConfigModule"
-import { runfetch, toFormData, toJson } from "./denchRunner";
+import { runfetch, toFormData, toHeadResponse, toJson, toStatus } from "./denchRunner";
 import type { HTTPCache, HTTPCredentials, HTTPMode, HTTPRedirect, HTTPReferrerPolicy } from "../types/denchHTTPEnum";
-import type { DenchCreateBuilder, DenchGetBuilder } from "../types/denchBuilder";
+import type {  DenchCreateBuilder, DenchGetBuilder, DenchHeadBuilder } from "../types/denchBuilder";
 import { type DenchConfig } from "../types/denchConfig";
 import { DenchURLNormalizeMode, type DenchAuthType } from "../types/denchEnum";
 import type { DenchInterface, DenchHTTPURL, DenchURLSearchParams } from "../types/dench";
+import type { DenchBaseRunner, DenchHeadRunner, DenchRunner } from "../types/denchRunner";
 
-
-//test code
-
-const createGetBuilder = <T>(config: DenchConfig, label? : string): DenchGetBuilder<T> => ({
-    config: config,
-    toResponse: () => runfetch<T>(config),
-    toJson: () => toJson(config),
-    toFormData: () => toFormData(config),
-    error: (callback: (error: unknown) => void) => {
-        errorConfig(config, callback);
-        return createGetBuilder<T>(config);
-    },
-    credentials: (credentials: HTTPCredentials) => createGetBuilder<T>(credentialsConfig(config, credentials)),
-    abort: (controller: AbortController) => createGetBuilder<T>(abortConfig(config, controller)),
-    auth: (token: string, type?: DenchAuthType) => createGetBuilder<T>(authConfig(config, token, type)),
-    timeout: (ms: number) => createGetBuilder<T>(timeoutConfig(config, ms)),
-    cache : (cache : HTTPCache) => createGetBuilder<T>(cacheConfig(config, cache)),
-    referrerPolicy: (policy : HTTPReferrerPolicy) => createGetBuilder<T>(referrerPolicyConfig(config, policy)),
-    mode: (mode : HTTPMode) => createGetBuilder<T>(modeConfig(config, mode)),
-    redirect: (redirect : HTTPRedirect) => createGetBuilder<T>(redirectConfig(config, redirect)),
-    api : <P = T>(api : string) => createGetBuilder<P>({...config, api}),
-    params : (params : DenchURLSearchParams) => createGetBuilder<T>(paramsConfig(config, params)),
-    boundaryNormalize: () => {
-        const newConfig = {
-            ...config,
-            URLNormalize : DenchURLNormalizeMode.BOUNDARY,
-        }
-        return createGetBuilder<T>(newConfig);
-    },
-    hardNormalize: () => {
-        const newConfig = {
-            ...config,
-            URLNormalize : DenchURLNormalizeMode.HARD,
-        }
-        return createGetBuilder<T>(newConfig);
-    },
-    URLNormalize: (normalizeMode: DenchURLNormalizeMode = DenchURLNormalizeMode.BOUNDARY) => {
-        const newConfig = {
-            ...config,
-            URLNormalize: normalizeMode
-        }
-        return createGetBuilder<T>(newConfig);
-    },
-    copy : () => {
-        const copiedConfig : DenchConfig = {
-            ...config,
-            options : {
-                ...config.options,
-                headers : config.options.headers ? {...config.options.headers} : undefined,
-                body : config.options.body
-            }
-        }
-        return createGetBuilder<T>(copiedConfig)
-    },
-
-    debug : ()=>{
-        console.log(`[${config.options.method}] ${config.label ? config.label : ""} Current Config:`, config);
-        return createGetBuilder<T>(config);
+const createBaseRunner = <T>(config: DenchConfig): DenchBaseRunner<T> => {
+    return {
+        toResponse: () => runfetch<T>(config)
     }
+}   
 
-})
-
-
-const createPostBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => ({
-    config: config,
-    toResponse: () => runfetch<T>(config),
-    toJson: () => toJson(config),
-    toFormData: () => toFormData(config),
-    sendJson: (data?) => createPostBuilder<T>(sendJsonConfig(config, data)),
-    sendForm: (data?) => createPostBuilder<T>(sendFormConfig(config, data)),
-    sendBlob: (data?) => createPostBuilder<T>(sendBlobConfig(config, data)),
-    sendUrlEncoded: (data?) => createPostBuilder<T>(sendUrlEncodedConfig(config, data)),
-    sendRaw : (data?) => createPostBuilder<T>(sendRawConfig(config, data)),
-    error: (callback: (error: unknown) => void) => {
-        errorConfig(config, callback);
-        return createPostBuilder<T>(config);
-    },
-    credentials: (credentials: HTTPCredentials) => createPostBuilder<T>(credentialsConfig(config, credentials)),
-    abort: (controller: AbortController) => createPostBuilder<T>(abortConfig(config, controller)),
-    auth: (token: string, type?: DenchAuthType) => createPostBuilder<T>(authConfig(config, token, type)),
-    mode: (mode: HTTPMode) =>  createPostBuilder<T>(modeConfig(config, mode)),
-    timeout: (ms: number) => createPostBuilder<T>(timeoutConfig(config, ms)),
-    cache : (cache : HTTPCache) => createPostBuilder<T>(cacheConfig(config, cache)),
-    referrerPolicy: (policy : HTTPReferrerPolicy) => createPostBuilder<T>(referrerPolicyConfig(config, policy)),
-    redirect: (redirect : HTTPRedirect) => createPostBuilder<T>(redirectConfig(config, redirect)),
-    api : <P=T>(api : string) => createPostBuilder<P>({...config, api}),
-    params : (params : DenchURLSearchParams) => createPostBuilder<T>(paramsConfig(config, params)),
-    boundaryNormalize: () => {
-        config.URLNormalize = DenchURLNormalizeMode.BOUNDARY;
-        return createPostBuilder<T>(config);
-    },
-    hardNormalize: () => {
-        config.URLNormalize = DenchURLNormalizeMode.HARD;
-        return createPostBuilder<T>(config);
-    },
-
-    URLNormalize: (normalizeMode: DenchURLNormalizeMode = DenchURLNormalizeMode.BOUNDARY) => {
-        config.URLNormalize = normalizeMode;
-        return createPostBuilder<T>(config);
-    },
-    copy: () => {
-        const copiedConfig: DenchConfig = {
-            ...config,
-            options: {
-                ...config.options,
-                headers: config.options.headers ? { ...config.options.headers } : undefined,
-                body: config.options.body
-            }
-        }
-        return createPostBuilder<T>(copiedConfig)
-    },
-
-    debug : ()=>{
-        
-        console.log(`[${config.options.method}] ${config.label ? config.label : ""} Current Config:`, config);
-        
-        //자기 자신 반환
-        return createPostBuilder<T>(config);
+const createRunner = <T>(config: DenchConfig): DenchRunner<T> => {
+    return {
+        toResponse: () => runfetch<T>(config),
+        toJson: () => toJson<T>(config),
+        toFormData: () => toFormData<T>(config)
     }
-})
+}
+
+const createHeadRunner = (config : DenchConfig) : DenchHeadRunner => {
+    return{
+        toResponse: () => runfetch(config),
+        toHeadResponse: () => toHeadResponse(config),
+        toStatus: () => toStatus(config)
+    }
+}
+
+
+const createBuilder = <T>(config  : DenchConfig, label? : string) : DenchCreateBuilder<T> | DenchGetBuilder<T> => (
+    {
+        config: config,
+        ...createRunner<T>(config),
+        error: (callback: (error: unknown) => void) => {
+            errorConfig(config, callback);
+            return createBuilder<T>(config);
+        },
+        credentials: (credentials: HTTPCredentials) => createBuilder<T>(credentialsConfig(config, credentials)),
+        abort: (controller: AbortController) => createBuilder<T>(abortConfig(config, controller)),
+        auth: (token: string, type?: DenchAuthType) => createBuilder<T>(authConfig(config, token, type)),
+        timeout: (ms: number) => createBuilder<T>(timeoutConfig(config, ms)),
+        cache: (cache: HTTPCache) => createBuilder<T>(cacheConfig(config, cache)),
+        referrerPolicy: (policy: HTTPReferrerPolicy) => createBuilder<T>(referrerPolicyConfig(config, policy)),
+        mode: (mode: HTTPMode) => createBuilder<T>(modeConfig(config, mode)),
+        redirect: (redirect: HTTPRedirect) => createBuilder<T>(redirectConfig(config, redirect)),
+        api: <P = T>(api: string) => createBuilder<P>({ ...config, api }),
+        params: (params: DenchURLSearchParams) => createBuilder<T>(paramsConfig(config, params)),
+        boundaryNormalize: () => {
+            const newConfig = {
+                ...config,
+                URLNormalize: DenchURLNormalizeMode.BOUNDARY,
+            }
+            return createBuilder<T>(newConfig);
+        },
+        hardNormalize: () => {
+            const newConfig = {
+                ...config,
+                URLNormalize: DenchURLNormalizeMode.HARD,
+            }
+            return createBuilder<T>(newConfig);
+        },
+        URLNormalize: (normalizeMode: DenchURLNormalizeMode = DenchURLNormalizeMode.BOUNDARY) => {
+            const newConfig = {
+                ...config,
+                URLNormalize: normalizeMode
+            }
+            return createBuilder<T  >(newConfig);
+        },
+        copy: () => {
+            const copiedConfig: DenchConfig = {
+                ...config,
+                options: {
+                    ...config.options,
+                    headers: config.options.headers ? { ...config.options.headers } : undefined,
+                    body: config.options.body
+                }
+            }
+            return createBuilder<T>(copiedConfig)
+        },
+
+        debug: () => {
+            console.log(`[${config.options.method}] ${config.label ? config.label : ""} Current Config:`, config);
+            return createBuilder<T>(config);
+        }
+    }
+)
+
+const createHeadBuilder = (config: DenchConfig, label? : string): DenchHeadBuilder => {
+    const { toJson, toFormData, ...builder }= createBuilder(config, label)
+    const headRunner = createHeadRunner(config);
+
+    
+    //구조 분해 할당으로 특정 속성을 제거할 수 있다.
+    return {
+        ...builder as unknown as DenchHeadBuilder,
+        ...headRunner
+    }
+}
+
+
+const createGetBuilder = <T>(config: DenchConfig, label? : string): DenchGetBuilder<T> => {
+    return createBuilder<T>(config, label);
+    
+}
+
+const createCreateBuilder = <T>(config: DenchConfig): DenchCreateBuilder<T> => {
+    return {
+        ...createBuilder<T>(config) as DenchCreateBuilder<T>,
+        sendJson: (data?: unknown) => createCreateBuilder<T>(sendJsonConfig(config, data)),
+        sendForm: (data?: FormData) => createCreateBuilder<T>(sendFormConfig(config, data)),
+        sendBlob: (data?: Blob) => createCreateBuilder<T>(sendBlobConfig(config, data)),
+        sendUrlEncoded: (data?: DenchURLSearchParams) => createCreateBuilder<T>(sendUrlEncodedConfig(config, data)),
+        sendRaw: (data?: BodyInit) => createCreateBuilder<T>(sendRawConfig(config, data)),
+    }
+}
 
 
 
@@ -188,7 +178,7 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
                 method : 'POST',
             }
         }
-        return createPostBuilder<T>(baseConfig);
+        return createCreateBuilder<T>(baseConfig);
     }
 
 
@@ -203,7 +193,7 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
                 method: 'PUT',
             }
         }
-        return createPostBuilder<T>(baseConfig);
+        return createCreateBuilder<T>(baseConfig);
     }
 
 
@@ -232,8 +222,23 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
                 method : 'PATCH',
             }
         }
-        return createPostBuilder<T>(baseConfig);
+        return createCreateBuilder<T>(baseConfig);
     }
+
+
+    const head = (api:string = "") : DenchHeadBuilder => {
+        const baseConfig : DenchConfig = {
+            label : label,
+            baseURL,
+            api,
+            URLNormalize : DenchURLNormalizeMode.BOUNDARY,
+            options : {
+                method : 'HEAD',
+            }
+        }
+        return createHeadBuilder(baseConfig);
+    }
+
 
     return {
         baseURL,
@@ -242,5 +247,6 @@ export function dench<T>(baseURL: DenchHTTPURL, label? :string) : DenchInterface
         patch: patch,
         put : put,
         delete : del,
+        head : head
     }
 }

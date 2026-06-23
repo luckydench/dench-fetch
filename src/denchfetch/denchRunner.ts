@@ -28,7 +28,7 @@ export function runfetch<T>(config: DenchConfig): Promise<Response> {
     }
 
 
-    return denchfetcher<T>(`${config.baseURL}${config.api}`, config);
+    return denchfetcher<T>(`${config.baseURL}${config.api}${config.params ? config.params : ""}`, config);
 }
 
 
@@ -44,4 +44,16 @@ export const toFormData = async <T>(config: DenchConfig) => {
         return res.formData();
     }
 )
+}
+
+export const toHeadResponse = async <T>(config: DenchConfig) => {
+    return runfetch<T>(config).then((res)=>{
+        return res.headers;
+    })
+}
+
+export const toStatus = async <T>(config: DenchConfig) => {
+    return runfetch<T>(config).then((res)=>{
+        return res.status;
+    })
 }

@@ -1,4 +1,4 @@
-import type { DenchCreateBuilder, DenchGetBuilder } from "./denchBuilder"
+import type { DenchCreateBuilder, DenchGetBuilder, DenchHeadBuilder } from "./denchBuilder"
 
 /**
  *  HTTP 요청 빌더 인터페이스
@@ -15,7 +15,8 @@ export interface DenchInterface{
     post : <T>(api?: string, data? : unknown) => DenchCreateBuilder<T>
     put : <T>(api?: string, data? : unknown) => DenchCreateBuilder<T>
     patch : <T>(api?: string, data? : unknown) => DenchCreateBuilder<T>
-    delete : <T>(api?: string) => DenchGetBuilder<T>
+    delete : <T>(api?: string) => DenchGetBuilder<T>,
+    head : (api?: string) => DenchHeadBuilder
 }
 
 

@@ -6,5 +6,14 @@ npm run build:log
 
 codex exec "서브에이전트 docs_pr 호출:pr 문서 작성해주세요"
 
-git add .
+CURRENT_BRANCH=$(git branch --show-current)
+SAFE_BRANCH_NAME="${CURRENT_BRANCH//\//-}" # 슬래시를 하이픈으로 바꿔줌
+BODY_FILE=$(find .github/pr-bodies -name "${SAFE_BRANCH_NAME}*.md" | head -n 1) 
+
+if [ -z "$BODY_FILE" ] ; then
+    echo "No PR body file found for branch $CURRENT_BRANCH. Creating a new one."
+    exit 1
+fi
+
+git add "$BODY_FILE"
 git commit -m 'docs:update pr document' --no-verify || echo "No changes to commit"

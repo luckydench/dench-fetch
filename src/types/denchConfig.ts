@@ -19,6 +19,7 @@ export interface DenchBaseConfig{
     label? : string,
     baseURL : string,
     api : string,
+    params? : string,
     errorcallback? : (error : unknown) => void,
     URLNormalize : DenchURLNormalizeMode, 
     options : DenchOptions

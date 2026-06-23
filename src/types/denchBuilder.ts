@@ -1,4 +1,4 @@
-import type { DenchRunner } from "./denchRunner";
+import type { DenchBaseRunner, DenchHeadRunner, DenchRunner } from "./denchRunner";
 import type { DenchBaseConfig } from "./denchConfig";
 import type { HTTPCache, HTTPCredentials, HTTPMode, HTTPRedirect, HTTPReferrerPolicy } from "./denchHTTPEnum";
 import type { DenchAuthType, DenchURLNormalizeMode } from "./denchEnum";
@@ -235,4 +235,18 @@ export interface DenchGetBuilder<T> extends DenchBuilder<T, DenchGetBuilder<T>>,
      */
     api: <P = T>(api: string) => DenchGetBuilder<P>,
 
+}
+
+/**
+ * HEAD 요청 빌더 인터페이스
+ * 
+ * 반환 body가 없으므로 템플릿 설정도 필요 없음
+ * @interface DenchHeadBuilder
+ * 
+ */
+export interface DenchHeadBuilder extends DenchBuilder<never, DenchHeadBuilder>, DenchHeadRunner{
+    /**
+     * api URL을 설정합니다.
+     */
+    api: (api: string) => DenchHeadBuilder,
 }

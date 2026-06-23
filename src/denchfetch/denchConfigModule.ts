@@ -265,6 +265,7 @@ export const paramsConfig = (config: DenchConfig, params: DenchURLSearchParams):
         }
     }
 
+    if(params) config.params = `?${params.toString()}`;
 
     return{
         ...config,
